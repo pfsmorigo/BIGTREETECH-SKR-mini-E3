@@ -1,3 +1,7 @@
+SDCARD := "/media/${USER}/$(shell ls -1 /media/${USER}/ | head -1)"
+
+default: build copy2sd
+
 help:
 	@echo "Tasks for local development:"
 	@echo "* tests-single-ci:             Run a single test from inside the CI"
@@ -50,3 +54,20 @@ tests-all-local-docker:
 setup-local-docker:
 	docker-compose build
 .PHONY: setup-local-docker
+
+build:
+	platformio run
+
+copy2sd:
+	@test -e ${SDCARD}/FIRMWARE.CUR && cp firmware.bin ${SDCARD}/ && ls -l ${SDCARD}
+
+clean:
+	platformio run --target clean
+
+distclean: clean
+	${RM} -r .pio
+
+builddeps:
+	sudo apt install \
+		python3-semantic-version \
+		python3-tabulate
